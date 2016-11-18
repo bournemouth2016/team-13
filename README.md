@@ -6,4 +6,7 @@ RNLI
 
 ## Members
 
-- Fill up later
+- Altay Adademir
+- Ekrem Yurdakul
+- Riccardo Broggi
+- Dennis Parchkov
