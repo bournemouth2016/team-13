@@ -1,10 +1,9 @@
 <?php
 
-$host= 'mysql.hostinger.co.uk';
-$username = 'u439981189_main';
-$password = '041195';
-$db= 'u439981189_main';
-$conn = mysqli_connect($host, $username, $password, $db);
+require($_SERVER['DOCUMENT_ROOT'] . '/app/DB/DB.php');
+require($_SERVER['DOCUMENT_ROOT'] . '/app/GCM/main.php');
+
+$gcm = new GCM();
 
 
 // Selects the 50 closest ships within a radius of the specifies coordinates in KMs
@@ -34,6 +33,15 @@ function determineRescuers($lat, $lng, $radius){
 
 }
 	
+function captainSignalsDistress($lat, $lng, $radius, $msg){
+    $shipsWithinRadius = determineRescuers($lat, $lng, $radius);
+    $gcm->notify($shipsWithinRadius, $msg);
+}
 
-determineRescuers('50.740736', '-1.823260', 5.1);
+function mrccSignalsStorm($lat, $lng, $radius){
+    $msg
+    $shipsWithinRadius = determineRescuers($lat, $lng, $radius);
+    notifyShips($shipsWithinRadius);
+
+}
 	
