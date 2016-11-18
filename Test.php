@@ -5,5 +5,5 @@
  * Date: 18/11/2016
  * Time: 21:17
  */
-Print("Hello World!\n");
+Print("Now Should Work!\n");
 ?>
