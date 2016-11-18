@@ -11,7 +11,7 @@ $conn = mysqli_connect($host, $username, $password, $db);
 function determineRescuers($lat, $lng, $radius){
 	
 	global $conn;
-	
+	$shipsWithinRadius = array();
     $sql = 'SELECT id, ( 6371 * acos( cos( radians(' . $lat .') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(' . $lng . ') ) + sin( radians(' . $lat .') ) * sin( radians( lat ) ) ) ) AS distance FROM alerts HAVING distance < ' . $radius .' ORDER BY distance LIMIT 0 , 50';
 
 	if ($result = $conn->query($sql)) {
@@ -19,7 +19,7 @@ function determineRescuers($lat, $lng, $radius){
 			if ($result->num_rows > 0) {
 				// output data of each row
 				while($row = $result->fetch_assoc()) {
-					echo "id: " . $row["id"];
+					array_push($shipsWithinRadius, $row["id"]);
 				}
 			} else {
 				echo "0 results";
@@ -28,8 +28,10 @@ function determineRescuers($lat, $lng, $radius){
 			
 		} else {
 			echo 'Fail';
-		}	
-	
+		}
+
+    return $shipsWithinRadius;
+
 }
 	
 
