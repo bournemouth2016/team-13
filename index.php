@@ -56,7 +56,7 @@
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <h1>SafeSail</h1>
+            <h1>SafeSail test</h1>
         </div>
     </div>
     <!-- /.container-fluid -->
