@@ -12,14 +12,14 @@ class GCM
         $this->db = new MysqliDb();
     }
 
-    public function sendGCMessage($tokens, $message)
+    public function notify($tokens, $message) 				
     {
         $fields = array(
             'registration_ids' => $tokens,
             'data' => $message
         );
         $headers = array(
-            'Authorization:key = AIzaSyD6zKN6IoHCYNi4gTJmFbPfJ78hFaewCNM',
+            'Authorization:key = AIzaSyBw2c9m1kBPXF0jeiVnjXpte0nLmTqFzp4',
             'Content-Type: application/json'
         );
 
@@ -37,18 +37,6 @@ class GCM
         }
         curl_close($ch);
         return $result;
-    }
-
-    public function getAllTokens()
-    {
-		$tokens = $this->db->getValue ("alerts", "token", null);		
-        print_r($tokens);       
-    }
-
-    public function sendNotification($message)
-    {
-        $message = array("type" => "notification", "data" => "Bringo" . ";;" . $message);
-        return $this->sendGCMessage($this->getAllTokens(), $message);
     }
 
     public function reqPosition($device_token)
