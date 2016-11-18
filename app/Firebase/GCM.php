@@ -19,7 +19,7 @@ class GCM
             'data' => $message
         );
         $headers = array(
-            'Authorization:key = AIzaSyBw2c9m1kBPXF0jeiVnjXpte0nLmTqFzp4',
+            'Authorization:key = AIzaSyD6zKN6IoHCYNi4gTJmFbPfJ78hFaewCNM',
             'Content-Type: application/json'
         );
 
@@ -39,22 +39,10 @@ class GCM
         return $result;
     }
 
-    private function getAllTokens()
+    public function getAllTokens()
     {
-        // TODO: MYSQL CONN CLASS HERE!!
-        $conn = mysqli_connect("mysql.hostinger.co.uk", "u809101341_main", "Hc3z9ft0lFU7SyeI9P", "u809101341_main");
-        $sql = " Select token From devices";
-        $result = mysqli_query($conn, $sql);
-        $tokens = array();
-
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $tokens[] = $row["token"];
-            }
-        }
-
-        mysqli_close($conn);
-        return $tokens;
+		$tokens = $this->db->getValue ("alerts", "token", null);		
+        print_r($tokens);       
     }
 
     public function sendNotification($message)
@@ -70,4 +58,4 @@ class GCM
     }
 }
 $notify = new GCM();
-$notify->sendNotification("Yo, talking to you mate.");
+$notify->getAllTokens();
