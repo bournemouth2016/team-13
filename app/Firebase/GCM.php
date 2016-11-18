@@ -1,7 +1,6 @@
 <?php
 
-require($_SERVER['DOCUMENT_ROOT'] . '/app/Controller.php');
-require($_SERVER['DOCUMENT_ROOT'] . '/app/Classes/DB.php');
+require($_SERVER['DOCUMENT_ROOT'] . '/app/DB/DB.php');
 
 class GCM
 {
