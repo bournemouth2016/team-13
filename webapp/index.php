@@ -7,66 +7,183 @@ $gcm = new GCM();
 $vessels = array();
 $emergency = array();
 
-$sql = "SELECT lng,lat FROM users WHERE status='active' ";
+$sql = "SELECT lng,lat,token,name,phone FROM users WHERE status='active' ";
 
 if ($result = $conn->query($sql)) {
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             array_push($vessels, $row['lng']);
             array_push($vessels, $row['lat']);
+            array_push($vessels, $row['token']);
+            array_push($vessels, $row['name']);
+            array_push($vessels, $row['phone']);
         }
     }
 }
 
 
-$sql = "SELECT lng,lat FROM users WHERE status='emergency' ";
+$sql = "SELECT lng,lat,token,name,phone FROM users WHERE status='emergency' ";
 
 if ($result = $conn->query($sql)) {
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             array_push($emergency, $row['lng']);
             array_push($emergency, $row['lat']);
+            array_push($emergency, $row['token']);
+            array_push($emergency, $row['name']);
+            array_push($emergency, $row['phone']);
         }
     }
+}
+
+function getNumberOfAlerts()
+{
+    global $conn;
+    $sql = "SELECT id FROM alerts WHERE status='new' OR status='closed' ";
+
+    if ($result = $conn->query($sql)) {
+
+        return $result->num_rows;
+
+    } else {
+        echo 'Fail';
+    }
+}
+
+function getNumberOfAlertsTriggered()
+{
+    global $conn;
+    $sql = "SELECT id FROM alerts WHERE status='new'";
+
+    if ($result = $conn->query($sql)) {
+
+        return $result->num_rows;
+
+    } else {
+        echo 'Fail';
+    }
+}
+
+function getNumberOfVesseles()
+{
+    global $conn;
+    $sql = "SELECT id FROM users";
+
+    if ($result = $conn->query($sql)) {
+
+        return $result->num_rows;
+
+    } else {
+        echo 'Fail';
+    }
+}
+
+function getRadii()
+{
+    global $conn;
+    $sql = "SELECT radius FROM settings";
+
+    $result = $conn->query($sql);
+
+	if ($result->num_rows > 0) {
+		
+		if($row = $result->fetch_assoc()) {
+			return $row['radius'];
+		}
+	} else {
+		return 10;
+	}
 }
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
+	<title> Group 13 </title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <style>
         #map {
-            height: 600px;
+            height: 700px;
             width: 100%;
         }
     </style>
 </head>
 <body>
-<center>
-    <h2>MRCC & RLNI Monitoring System</h3></center>
-<div id="map"></div>
+
+	</center>
+	<div class="col-md-10">
+	
+    <h2>MRCC & RLNI Monitoring System</h3>
+	<div id="map"></div></div>
+	<div class="col-md-2">
+	<h1>Menu</h1>
+	<hr>
+	<a href="/app/GCM/test.php?update=1"><button>Update Vessel Locations</button></a>
+        <form action="/app/GCM/test.php" method="post">
+        <div id="messageVessel"></div>
+        <hr>
+        <b>Send Direct Message:</b>
+		<br>		
+        <span style="color:orange; font-weight: 600" id="markerSelected">Marker Not Selected</span>
+		<br><span id="captainInfo"></span>
+		<br/>
+		<input type="text" name="notify" value="true" hidden>
+        <input type="text" name="message" placeholder="Message for the vessel">
+        <input type="hidden" value="" name="vessel" id="tokenForMessage" >
+        <input value="Send Notification" type="submit" style="margin-top: 5px;">
+        </form>
+		<br/>
+		<br/>
+		<h2>Quick Stats</h2>
+		<span>Currently Active: <?php echo getNumberOfVesseles(); ?></span><br/>
+		<span>On-going Emergencies: <?php echo getNumberOfAlerts(); ?></span><br/>
+		<span>Total Emergencies: <?php echo getNumberOfAlertsTriggered(); ?></span>
+		<br/>
+		<br/>
+		<h2>Settings</h2>
+		<form method="post" action="/app/GCM/test.php">
+		<input type="hidden" name="radius" value="1"/>
+		<label> Dispatch Radius (KM) </label>
+		<input type="text" value="<?php echo getRadii(); ?>" name="radiusVal" placeholder="Dispatch Radius (KM)"/>
+		<input type="submit" style="margin-top: 5px" value="Apply"/>
+		</form>
+	</div>
+	</div>
 <script> 
 function initMap(){
-    var initialLocation = {lat: -6.813111, lng: 39.304491};
+    var emergency = <?php echo json_encode($emergency); ?>;
+    var vessels = <?php echo json_encode($vessels); ?>;
+    var initialLocation;
+
+    if(emergency[0] != null && emergency[0] != null){
+        initialLocation = {lat: parseFloat(emergency[1]), lng: parseFloat(emergency[0])};
+        }
+    else {
+        initialLocation = {lat: -6.769699, lng: 39.320196};
+        }
 
     var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 15,
+        zoom: 6,
         center: initialLocation
     });
 
-    var vessels = <?php echo json_encode($vessels); ?>;
-        for(i=0; i<vessels.length;i=i+2){
+        for(i=0; i<vessels.length;i=i+5){
             var lng = parseFloat(vessels[i]);
             var lat = parseFloat(vessels[i+1]);
-            createMarker(lat,lng,map);
+            var token = (vessels[i+2]);
+            var name = (vessels[i+3]);
+            var phone = (vessels[i+4]);
+            createMarker(lat,lng,token,name,phone,map);
     }
 
-    var emergency = <?php echo json_encode($emergency); ?>;
-        for(i=0; i<emergency.length;i=i+2){
+        for(i=0; i<emergency.length;i=i+5){
             var lng = parseFloat(emergency[i]);
             var lat = parseFloat(emergency[i+1]);
-            createEmergencyMarker(lat,lng,map);
-            createEmergencyRadius(lat,lng,map);
+            var token = (emergency[i+2]);
+            var name = (emergency[i+3]);
+            var phone = (emergency[i+4]);
+            createEmergencyMarker(lng,lat,token,name,phone,map);
+            createEmergencyRadius(lng,lat,map);
         }
 
     //
@@ -74,21 +191,41 @@ function initMap(){
 
 
 
-function createMarker(lng,lat,map){
+function createMarker(lng,lat,token,name,phone,map){
     var location = {lat: lat, lng: lng};
     var marker = new google.maps.Marker({
         position: location,
         map: map,
+        title: token,
+        secret: 'Reporter: '+ name + ', Phone: ' + phone,
         icon: 'icon.png'
     });
+     marker.addListener('click', function() {
+              document.getElementById('tokenForMessage').value = '';
+              document.getElementById('tokenForMessage').value = marker.title;
+              document.getElementById('markerSelected').innerHTML = "Marker Selected";
+			  document.getElementById('markerSelected').style.color = "green";
+			  document.getElementById('captainInfo').innerHTML = '';
+			  document.getElementById('captainInfo').innerHTML = marker.secret;
+            });
 }
-function createEmergencyMarker(lng,lat,map){
+function createEmergencyMarker(lng,lat,token,name,phone,map){
     var location = {lat: lat, lng: lng};
     var marker = new google.maps.Marker({
         position: location,
         map: map,
+        title: token,
+        secret: 'Reporter: '+ name + ', Phone: ' + phone,
         icon: 'http://maps.google.com/mapfiles/kml/shapes/caution.png'
     });
+     marker.addListener('click', function() {
+              document.getElementById('tokenForMessage').value = '';
+              document.getElementById('tokenForMessage').value = marker.title;
+              document.getElementById('markerSelected').innerHTML = "Marker Selected";
+			  document.getElementById('markerSelected').style.color = "green";
+			  document.getElementById('captainInfo').innerHTML = '';
+			  document.getElementById('captainInfo').innerHTML = marker.secret;
+            });
 }
 
 function createEmergencyRadius(lng,lat,map){
@@ -100,7 +237,7 @@ function createEmergencyRadius(lng,lat,map){
         fillOpacity: 0.35,
         map: map,
         center: {lat: lat, lng:lng},
-        radius: 1300
+        radius: (<?php echo getRadii(); ?>*1000)
     });
 }
 

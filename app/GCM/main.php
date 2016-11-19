@@ -19,7 +19,7 @@ class GCM
             'data' => $message
         );
         $headers = array(
-            'Authorization:key = AIzaSyBw2c9m1kBPXF0jeiVnjXpte0nLmTqFzp4',
+            'Authorization:key = AIzaSyBw2c9m1kBPXF0jeiVnjXpte0nLmTqFzp4', //AIzaSyDkZ08qw-Dk1fXDciZAx7_eoz6PpYKav0Q', //AIzaSyBw2c9m1kBPXF0jeiVnjXpte0nLmTqFzp4',
             'Content-Type: application/json'
         );
 
@@ -46,11 +46,9 @@ class GCM
     }
 	
 	
-    public function sendNotification($device_token)
+    public function sendNotification($device_token, $title, $message)
     {
-        $message = array("type" => "notification", "data" => "Hi ekrem;; FUCK YOU");
+        $message = array("type" => "notification", "data" => $title.';;'.$message);
         return $this->sendMessage($device_token, $message);
     }
 }
-$notify = new GCM();
-$notify->sendNotification(['eniCT7gaF_E:APA91bFjPClMtsK53cYYm5sMvkvw43_6FaAy8TA85wR9EJC99TDQO_HMXxzeK-buCTqKWZq-vl3rCC1pe42lzpYWGio_Z0PC6XabfosTErjmpyMb82qNp6WeKzf2ZvLQ7ER5OjwDUIVi']);
