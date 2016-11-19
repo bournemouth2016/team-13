@@ -5,6 +5,8 @@ require($_SERVER['DOCUMENT_ROOT'] . '/app/GCM/main.php');
 
 $gcm = new GCM();
 
+$mrcc = ''; // Token for spcial MRCC Reporting
+
 
 // Selects the 50 closest ships within a radius of the specifies coordinates in KMs
 function determineRescuers($lat, $lng, $radius){
@@ -20,6 +22,8 @@ function determineRescuers($lat, $lng, $radius){
 				while($row = $result->fetch_assoc()) {
 					array_push($shipsWithinRadius, $row["id"]);
 				}
+				global $mrcc;
+				array_push($shipsWithinRadius, $mrcc);
 			} else {
 				echo "0 results";
 			}
@@ -33,15 +37,23 @@ function determineRescuers($lat, $lng, $radius){
 
 }
 	
-function captainSignalsDistress($lat, $lng, $radius, $msg){
+function captainSignalsDistress($lat, $lng, $radius, $captainName, $peopleInDanger){
+    global $gcm;
+    $msg = '';
     $shipsWithinRadius = determineRescuers($lat, $lng, $radius);
-    $gcm->notify($shipsWithinRadius, $msg);
+    $gcm->sendMessage($shipsWithinRadius, $msg);
 }
 
 function mrccSignalsStorm($lat, $lng, $radius){
-    $msg
+    global $gcm;
+    $msg = 'Weather Warning, Go Home!';
     $shipsWithinRadius = determineRescuers($lat, $lng, $radius);
-    notifyShips($shipsWithinRadius);
+    $gcm->sendMessage($shipsWithinRadius, $msg);
+}
+
+function captainSignalsDistressSettled($vesselLost, $casualties, $livesSaved){
 
 }
+
+
 	
