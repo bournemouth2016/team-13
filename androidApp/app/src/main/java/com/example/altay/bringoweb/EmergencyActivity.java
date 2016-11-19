@@ -37,33 +37,20 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class EmergencyActivity extends Activity  implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class EmergencyActivity extends Activity {
     private boolean thread_running = true;
     private Button btn_emergency;
     private String token;
-    private double longitude;
-    private double latitude;
-    private double accuracy;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergency);
-        longitude = 0.0;
-        latitude = 0.0;
-        accuracy = 0.0;
+
         btn_emergency = (Button) findViewById(R.id.btn_emergency);
         token = FirebaseInstanceId.getInstance().getToken();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
 
-        mGoogleApiClient.connect();
 
         btn_emergency.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,9 +71,6 @@ public class EmergencyActivity extends Activity  implements LocationListener, Go
                                         .add("type", "alert")
                                         .add("ident", getHashedMessage(String.valueOf(new Random().nextInt(5))))
                                         .add("status","new")
-                                        .add("lat",String.valueOf(latitude))
-                                        .add("lng",String.valueOf(longitude))
-                                        .add("acc",String.valueOf(accuracy))
                                         .build();
 
                                 Request request = new Request.Builder()
@@ -140,51 +124,4 @@ public class EmergencyActivity extends Activity  implements LocationListener, Go
         return hashtext;
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-        mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        //mLocationRequest.setInterval(1000); // Update location every second
-
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, (com.google.android.gms.location.LocationListener) this);
-        }
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
 }
