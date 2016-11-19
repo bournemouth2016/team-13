@@ -61,6 +61,34 @@ function rescuerSignalsAbleToHelp($locationOfHelper, $details){
 
 function queryWhetherCanHelpOrNot($sailorID){
 
+
+}
+
+function rescuerIsGoingToHelp($distressID, $IDOfRescuer){
+
+}
+
+function determineTotalPeopleInvolvedInAccidents(){
+
+    global $conn;
+    $numberOfPeople = 0;
+    $sql = "SELECT pax FROM alerts WHERE status='1' OR status='0' ";
+
+    if ($result = $conn->query($sql)) {
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $numberOfPeople++;
+            }
+        } else {
+            echo "0 results";
+        }
+
+
+    } else {
+        echo 'Fail';
+    }
+    return $numberOfPeople;
 }
 
 function determineNumberOfAlarmsTriggered()
@@ -111,9 +139,61 @@ function determineNumberOfFalseAlarmsTriggered()
     return $numberOfAlarms;
 }
 
+function determineNumberOfCasualties(){
+
+    global $conn;
+    $numberOfCasualties = 0;
+    $sql = "SELECT casualties FROM alerts WHERE status='1' OR status='0'";
+
+    if ($result = $conn->query($sql)) {
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $numberOfCasualties++;
+            }
+        } else {
+            echo "0 results";
+        }
+
+
+    } else {
+        echo 'Fail';
+    }
+    return $numberOfCasualties;
+}
+
+function determineNumberOfVesselsLost(){
+
+
+    global $conn;
+    $numberOfVesselsLost = 0;
+    $sql = "SELECT vesselSaved FROM alerts WHERE status='1' OR status='0' AND vesselSaved='false'";
+
+    if ($result = $conn->query($sql)) {
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $numberOfVesselsLost++;
+            }
+        } else {
+            echo "0 results";
+        }
+
+
+    } else {
+        echo 'Fail';
+    }
+    return $numberOfVesselsLost;
+}
+
 function produceRLNIReport(){
     $numberOfAlarmsTriggered = determineNumberOfAlarmsTriggered();
     $numberOfFalseAlarmsTriggered = determineNumberOfFalseAlarmsTriggered();
+    $numberOfPeopleInvolvedInAccidents = determineTotalPeopleInvolvedInAccidents();
+    $nuberOfCasualties = determineNumberOfCasualties();
+    $numberOfLivesSaved = $numberOfPeopleInvolvedInAccidents - $nuberOfCasualties;
+
+
 }
 
 
