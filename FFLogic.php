@@ -55,5 +55,67 @@ function captainSignalsDistressSettled($vesselLost, $casualties, $livesSaved){
 
 }
 
+function rescuerSignalsAbleToHelp($locationOfHelper, $details){
+
+}
+
+function queryWhetherCanHelpOrNot($sailorID){
+
+}
+
+function determineNumberOfAlarmsTriggered()
+{
+
+    global $conn;
+    $numberOfAlarms = 0;
+    $sql = "SELECT id FROM alerts WHERE status='1' OR status='0' ";
+
+    if ($result = $conn->query($sql)) {
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $numberOfAlarms++;
+            }
+        } else {
+            echo "0 results";
+        }
+
+
+    } else {
+        echo 'Fail';
+    }
+    return $numberOfAlarms;
+}
+
+function determineNumberOfFalseAlarmsTriggered()
+{
+
+    global $conn;
+    $numberOfAlarms = 0;
+    $sql = "SELECT id FROM alerts WHERE status='-1'";
+
+    if ($result = $conn->query($sql)) {
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $numberOfAlarms++;
+            }
+        } else {
+            echo "0 results";
+        }
+
+
+    } else {
+        echo 'Fail';
+    }
+    return $numberOfAlarms;
+}
+
+function produceRLNIReport(){
+    $numberOfAlarmsTriggered = determineNumberOfAlarmsTriggered();
+    $numberOfFalseAlarmsTriggered = determineNumberOfFalseAlarmsTriggered();
+}
+
+
 
 	
