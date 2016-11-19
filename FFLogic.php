@@ -37,10 +37,17 @@ function determineRescuers($lat, $lng, $radius){
 
 }
 	
-function captainSignalsDistress($lat, $lng, $radius, $captainName, $peopleInDanger){
+function captainSignalsDistress($distressId, $lat, $lng, $radius, $captainName, $peopleInDanger){
     global $gcm;
     $msg = '';
     $shipsWithinRadius = determineRescuers($lat, $lng, $radius);
+
+
+
+    global $conn;
+    $sql = "INSERT INTO alerts (rescuersInRadius) VALUES " . $shipsWithinRadius . " WHERE  token=''" . $distressId . "'";
+    $result = $conn->query($sql);
+
     $gcm->sendMessage($shipsWithinRadius, $msg);
 }
 
@@ -186,12 +193,48 @@ function determineNumberOfVesselsLost(){
     return $numberOfVesselsLost;
 }
 
-function produceRLNIReport(){
+function determineNumberOfVesselsSaved(){
+
+
+    global $conn;
+    $numberOfVesselsLost = 0;
+    $sql = "SELECT vesselSaved FROM alerts WHERE status='1' OR status='0' AND vesselSaved='true'";
+
+    if ($result = $conn->query($sql)) {
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $numberOfVesselsLost++;
+            }
+        } else {
+            echo "0 results";
+        }
+
+
+    } else {
+        echo 'Fail';
+    }
+    return $numberOfVesselsLost;
+}
+
+function determineNumberOfRespondersThatHelped(){
+
+}
+
+function determineOfRespondersThatCouldNotHelp(){
+
+}
+
+function produceReport(){
     $numberOfAlarmsTriggered = determineNumberOfAlarmsTriggered();
     $numberOfFalseAlarmsTriggered = determineNumberOfFalseAlarmsTriggered();
     $numberOfPeopleInvolvedInAccidents = determineTotalPeopleInvolvedInAccidents();
     $nuberOfCasualties = determineNumberOfCasualties();
     $numberOfLivesSaved = $numberOfPeopleInvolvedInAccidents - $nuberOfCasualties;
+    $numberOfVesselsLost = determineNumberOfVesselsLost();
+    $numberOfVesselsSaved = determineNumberOfVesselsSaved();
+    $numberOfRespondersThatHelped = determineNumberOfRespondersThatHelped();
+    $numberOfRespondersThatCouldNotHelp = determineOfRespondersThatCouldNotHelp();
 
 
 }
