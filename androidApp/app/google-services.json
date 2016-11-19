@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "342059051646",
+    "firebase_url": "https://bringo-9e3c4.firebaseio.com",
+    "project_id": "bringo-9e3c4",
+    "storage_bucket": "bringo-9e3c4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:342059051646:android:48c4b8b02ab94457",
+        "android_client_info": {
+          "package_name": "com.example.altay.bringoweb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "342059051646-kmp0kutt4ko2dhluo3l4fo1t5pomvgtv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCinQHLTxOHgFXAFHjsftWjucn2cI3yWg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

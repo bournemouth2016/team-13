@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Bringo Web</string>
+    <string name="title_activity_emergency">EmergencyActivity</string>
+</resources>
