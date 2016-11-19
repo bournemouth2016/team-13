@@ -29,6 +29,7 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -39,8 +40,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private String Token;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private static String location = "Null";
-    private static Location realLoc ;
+    private static String location = "8.223,5.322;20";
 
     public void initGoogleApiClient() {
 
@@ -51,6 +51,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .build();
 
         mGoogleApiClient.connect();
+
     }
 
     @Override
@@ -61,7 +62,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     private void handleMessage(RemoteMessage remoteMessage) {
 
-        final String type = remoteMessage.getData().get("type");
+        String type = remoteMessage.getData().get("type");
 
         if (type.equals("notification")) {
 
@@ -72,10 +73,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 data = message.split(";;");
             }
 
-            Intent i = new Intent(this, MainActivity.class);
+            Intent i = new Intent(getApplicationContext(), ArrowActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                     .setAutoCancel(true)
@@ -91,8 +92,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         } else if (type.equals("reportPos")) {
 
-            if (!mGoogleApiClient.isConnected()) {
-                System.out.println("debug");
+            if (mGoogleApiClient.isConnected()) {
                 mGoogleApiClient.connect();
             }
 
@@ -108,10 +108,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                             OkHttpClient client = new OkHttpClient();
                             RequestBody body = new FormBody.Builder()
                                     .add("token", Token)
-                                    .add("type", "reportPos")
-                                    .add("lng",String.valueOf(realLoc.getLongitude()))
-                                    .add("lat", String.valueOf(realLoc.getLatitude()))
-                                    .add("acc",String.valueOf(realLoc.getAccuracy()))
+                                    .add("type","reportPos")
+                                    .add("lat", location.split(";")[0].split(",")[0])
+                                    .add("lng", location.split(";")[0].split(",")[1])
+                                    .add("acc", location.split(";")[1])
                                     .build();
 
                             Request request = new Request.Builder()
@@ -120,7 +120,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                                     .build();
 
                             try {
-                                client.newCall(request).execute();
+                              Response response = client.newCall(request).execute();
+                               System.out.println(response.code());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -137,18 +138,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     }
                 }
             });
-
-            if(realLoc != null){
-                t.start();
-            }
-
+            t.start();
         }
 
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         //mLocationRequest.setInterval(1000); // Update location every second
@@ -173,7 +169,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     @Override
     public void onLocationChanged(Location location) {
-        realLoc = location;
         this.location = location.getLatitude() + "," + location.getLongitude() + ";" + location.getAccuracy();
         Log.e("Location received: ", this.location.toString());
     }

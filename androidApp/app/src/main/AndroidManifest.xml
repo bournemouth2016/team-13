@@ -30,7 +30,14 @@
         <activity
             android:name=".EmergencyActivity"
             android:label="@string/title_activity_emergency"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ArrowActivity"
+            android:label="ArrowActivity"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".emergency_description" />
+        <activity android:name=".life_threatening" />
+        <activity android:name=".waiting"></activity>
     </application>
 
 </manifest>

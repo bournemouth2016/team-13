@@ -40,6 +40,7 @@ import okhttp3.RequestBody;
 public class EmergencyActivity extends Activity {
     private boolean thread_running = true;
     private Button btn_emergency;
+    private Button btn_home_safe;
     private String token;
 
 
@@ -85,7 +86,7 @@ public class EmergencyActivity extends Activity {
 
                                 thread_running = false;
 
-                                Intent i = new Intent(getApplicationContext(), EmergencyActivity.class);
+                                Intent i = new Intent(getApplicationContext(), emergency_description.class);
                                 startActivity(i);
 
                             } else {
@@ -104,6 +105,57 @@ public class EmergencyActivity extends Activity {
 
             }
         });
+
+        btn_home_safe = (Button) findViewById(R.id.btn_home_safe);
+
+        btn_home_safe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        while (thread_running) {
+
+                            if (token != null) {
+
+                                try {
+                                    OkHttpClient client = new OkHttpClient();
+                                    RequestBody body = new FormBody.Builder()
+                                            .add("token", token)
+                                            .add("type", "cancel")
+                                            .build();
+
+                                    Request request = new Request.Builder()
+                                            .url("http://smartsail.esy.es/app/api.php")
+                                            .post(body)
+                                            .build();
+
+                                    client.newCall(request).execute();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                thread_running = false;
+
+                                Intent i = new Intent(getApplicationContext(), emergency_description.class);
+                                startActivity(i);
+
+                            } else {
+                                System.out.println("- Token not retrieved -");
+                            }
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+                t.start();
+            }
+        });
+
     }
 
 
