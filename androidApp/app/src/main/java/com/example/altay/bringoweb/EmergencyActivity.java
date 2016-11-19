@@ -27,7 +27,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 import java.util.Date;
@@ -37,7 +36,6 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class EmergencyActivity extends Activity {
     private boolean thread_running = true;
@@ -51,9 +49,9 @@ public class EmergencyActivity extends Activity {
         setContentView(R.layout.activity_emergency);
 
         btn_emergency = (Button) findViewById(R.id.btn_emergency);
-
-        FirebaseMessaging.getInstance().subscribeToTopic("test");
         token = FirebaseInstanceId.getInstance().getToken();
+
+
         btn_emergency.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,14 +77,16 @@ public class EmergencyActivity extends Activity {
                                         .url("http://smartsail.esy.es/app/api.php")
                                         .post(body)
                                         .build();
-                                    Response response =  client.newCall(request).execute();
-                                    System.out.println(response.code());
-                                    response.close();
+
+                                    client.newCall(request).execute();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
 
                                 thread_running = false;
+
+                                Intent i = new Intent(getApplicationContext(), EmergencyActivity.class);
+                                startActivity(i);
 
                             } else {
                                 System.out.println("- Token not retrieved -");

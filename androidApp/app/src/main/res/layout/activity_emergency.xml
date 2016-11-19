@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/btn_emergency"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_marginTop="150dp"
         android:layout_gravity="center"
         android:background="@drawable/emergency"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="38dp" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_home_safe"
+        android:layout_width="211dp"
+        android:layout_height="208dp"
+        android:layout_gravity="center"
+        android:background="@drawable/home"/>
 
 </LinearLayout>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:background="#ffffff">
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="36dp" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_life_threatening"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/life_threatening"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="52dp" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_engine_failure"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/engine_failure"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="48dp" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_false_alert"
+        android:layout_width="132dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/false_alert" />
+
+
+</LinearLayout>

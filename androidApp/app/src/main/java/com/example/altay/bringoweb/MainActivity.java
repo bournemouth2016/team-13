@@ -22,7 +22,6 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 import android.Manifest;
 import android.webkit.WebViewClient;
@@ -59,8 +58,7 @@ public class MainActivity extends AbsRuntimePermission {
         // Set IP
         IPAddr = getLocalIpAddress();
 
-        //FirebaseMessaging.getInstance().subscribeToTopic("test");
-
+        FirebaseMessaging.getInstance().subscribeToTopic("test");
         token = FirebaseInstanceId.getInstance().getToken();
         login = (Button) findViewById(R.id.btn_login);
         name = (EditText) findViewById(R.id.name);
@@ -87,18 +85,16 @@ public class MainActivity extends AbsRuntimePermission {
                                         .post(body)
                                         .build();
                                 try {
-                                 Response response = client.newCall(request).execute();
-                                    if(response.code() == 200){
-
-                                        Intent i = new Intent(getApplicationContext(),EmergencyActivity.class);
-                                        startActivity(i);
-
-                                    }
+                                    client.newCall(request).execute();
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
 
                                 thread_running = false;
+
+                                Intent i = new Intent(getApplicationContext(), EmergencyActivity.class);
+                                startActivity(i);
+
                             } else {
                                 System.out.println("- Token not retrieved -");
                             }

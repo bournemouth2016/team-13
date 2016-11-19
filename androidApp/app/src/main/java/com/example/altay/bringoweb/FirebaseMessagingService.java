@@ -29,7 +29,6 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -41,6 +40,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private static String location = "Null";
+    private static Location realLoc ;
 
     public void initGoogleApiClient() {
 
@@ -51,7 +51,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .build();
 
         mGoogleApiClient.connect();
-        location = "8.223,5.322;20";
     }
 
     @Override
@@ -62,7 +61,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     private void handleMessage(RemoteMessage remoteMessage) {
 
-        String type = remoteMessage.getData().get("type");
+        final String type = remoteMessage.getData().get("type");
 
         if (type.equals("notification")) {
 
@@ -92,7 +91,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         } else if (type.equals("reportPos")) {
 
-            if (mGoogleApiClient.isConnected()) {
+            if (!mGoogleApiClient.isConnected()) {
+                System.out.println("debug");
                 mGoogleApiClient.connect();
             }
 
@@ -108,10 +108,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                             OkHttpClient client = new OkHttpClient();
                             RequestBody body = new FormBody.Builder()
                                     .add("token", Token)
-                                    .add("type","reportPos")
-                                    .add("lat", location.split(";")[0].split(",")[0])
-                                    .add("lng", location.split(";")[0].split(",")[1])
-                                    .add("acc", location.split(";")[1])
+                                    .add("type", "reportPos")
+                                    .add("lng",String.valueOf(realLoc.getLongitude()))
+                                    .add("lat", String.valueOf(realLoc.getLatitude()))
+                                    .add("acc",String.valueOf(realLoc.getAccuracy()))
                                     .build();
 
                             Request request = new Request.Builder()
@@ -120,8 +120,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                                     .build();
 
                             try {
-                              Response response = client.newCall(request).execute();
-                               System.out.println(response.code());
+                                client.newCall(request).execute();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -138,13 +137,18 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     }
                 }
             });
-            t.start();
+
+            if(realLoc != null){
+                t.start();
+            }
+
         }
 
     }
 
     @Override
     public void onConnected(Bundle bundle) {
+
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         //mLocationRequest.setInterval(1000); // Update location every second
@@ -169,6 +173,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     @Override
     public void onLocationChanged(Location location) {
+        realLoc = location;
         this.location = location.getLatitude() + "," + location.getLongitude() + ";" + location.getAccuracy();
         Log.e("Location received: ", this.location.toString());
     }
